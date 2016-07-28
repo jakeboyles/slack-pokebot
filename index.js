@@ -90,14 +90,16 @@ a.init(username, password, location, provider, function(err) {
                     longitude : wildPokemon[j].Longitude};
                   var distance = geolib.getDistance(position,start_location)
                   if ( true == true ){
-                    var message = 'There is a *' + pokemon.name + '* ('+pokemon.num+') '+distance+'m away! <https://maps.google.co.uk/maps?f=d&dirflg=w&saddr=' + start_location.latitude+","+start_location.longitude+'&daddr=' + position.latitude + ',' + position.longitude+'|Route> https://maps.googleapis.com/maps/api/staticmap?center=${position.latitude},${position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=AIzaSyCnkOdk_oZot2mfM4qfsR9EDXI0xJglpq4';
+                    let image = `https://maps.googleapis.com/maps/api/staticmap?center=${position.latitude},${position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=AIzaSyCnkOdk_oZot2mfM4qfsR9EDXI0xJglpq4`,
+                    var message = 'There is a *' + pokemon.name + '* ('+pokemon.num+') '+distance+'m away! <https://maps.google.co.uk/maps?f=d&dirflg=w&saddr=' + start_location.latitude+","+start_location.longitude+'&daddr=' + position.latitude + ',' + position.longitude+'|Route>'+image;
                     if ( true == true ){
                       request.post({
                         url: "https://hooks.slack.com/services/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",
                         json: true,
                         body: {
                           text: message,
-                          icon_url: pokemon.img
+                          icon_url: pokemon.img,
+                          image:image,
                         }
                       }, function(error, response, body) {
                         if (error) winston.log('error', error);
