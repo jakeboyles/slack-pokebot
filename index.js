@@ -30,7 +30,7 @@ var a = new PokemonGO.Pokeio();
 
 var location = {
   type: 'name',
-  name: process.env.PGO_LOCATION || "new york",
+  name:  "new york",
 };
 
 var username = process.env.PGO_USERNAME || 'jacobboyles';
