@@ -35,7 +35,7 @@ var location = {
 
 var username = process.env.PGO_USERNAME;
 var password = process.env.PGO_PASSWORD;
-var provider = process.env.PGO_PROVIDER || 'google';
+var provider = process.env.PGO_PROVIDER || 'ptc';
 
 var pokeMap = {};
 
