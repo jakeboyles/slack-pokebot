@@ -89,11 +89,11 @@ a.init(username, password, location, provider, function(err) {
                   var position = { latitude : wildPokemon[j].Latitude,
                     longitude : wildPokemon[j].Longitude};
                   var distance = geolib.getDistance(position,start_location)
-                  if ( metrics.shouldReport( wildPokemon[j] , pokemon , distance) ){
+                  if ( true == true ){
                     var message = 'There is a *' + pokemon.name + '* ('+pokemon.num+') '+distance+'m away! <https://maps.google.co.uk/maps?f=d&dirflg=w&saddr=' + start_location.latitude+","+start_location.longitude+'&daddr=' + position.latitude + ',' + position.longitude+'|Route>';
-                    if ( process.env.SLACK_WEBHOOK_URL ){
+                    if ( true == true ){
                       request.post({
-                        url: process.env.SLACK_WEBHOOK_URL,
+                        url: "https://hooks.slack.com/services/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",
                         json: true,
                         body: {
                           text: message,
