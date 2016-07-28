@@ -30,11 +30,11 @@ var a = new PokemonGO.Pokeio();
 
 var location = {
   type: 'name',
-  name: process.env.PGO_LOCATION,
+  name: process.env.PGO_LOCATION || "new york",
 };
 
-var username = process.env.PGO_USERNAME;
-var password = process.env.PGO_PASSWORD;
+var username = process.env.PGO_USERNAME || 'jacobboyles';
+var password = process.env.PGO_PASSWORD || 'baseball200';
 var provider = process.env.PGO_PROVIDER || 'ptc';
 
 var pokeMap = {};
