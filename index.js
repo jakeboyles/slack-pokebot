@@ -99,7 +99,7 @@ a.init(username, password, location, provider, function(err) {
                         body: {
                           text: message,
                           icon_url: pokemon.img,
-                          image_url:image,
+                          image_url:image
                         }
                       }, function(error, response, body) {
                         if (error) winston.log('error', error);
