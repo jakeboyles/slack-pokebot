@@ -1,3 +1,6 @@
+'use strict';
+
+
 var PokemonGO = require('pokemon-go-node-api');
 var request = require('request');
 var _ = require('lodash');
@@ -14,7 +17,7 @@ var location = {
   type: 'name',
   name: process.env.PGO_LOCATION,
 };
-var geoLocation = location.name.match(/^(-?\d+\.\d+),(-?\d+\.\d+)$/);
+var geoLocation = process.env.PGO_LOCATION.match(/^(-?\d+\.\d+),(-?\d+\.\d+)$/);
 if ( geoLocation ){
   location.type = 'coords';
   location.coords = {
