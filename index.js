@@ -36,90 +36,6 @@ var googleAPI = process.env.MAPS_API;
 var start_location;
 
 
-a.init(username, password, location, provider, (err) => {
-  if (err) {
-    logger.error(err);
-    process.exit(2);
-  }
-
-  logger.log('info', `Current location: ${a.playerInfo.locationName}`);
-  logger.log('info', `lat/long/alt: : ${a.playerInfo.latitude} ${a.playerInfo.longitude} ${a.playerInfo.altitude}`);
-  start_location = {
-    latitude: a.playerInfo.latitude,
-    longitude: a.playerInfo.longitude,
-  };
-
-  a.GetProfile((err, profile) => {
-    if (err) {
-      logger.error(err);
-      process.exit(3);
-    }
-
-    logger.log('info', `Username: ${profile.username}`);
-
-    function getHeartbeat() {
-      logger.log('info', 'Requesting heartbeat');
-      a.Heartbeat((err, hb) => {
-        if (err) {
-          logger.error(err);
-          process.exit(3);
-        }
-
-        if (!hb || !hb.cells) {
-          logger.error('hb or hb.cells undefined - aborting');
-        } else {
-          logger.log('info', 'Heartbeat received');
-          const encounters = {};
-          for (let i = hb.cells.length - 1; i >= 0; i--) {
-            if (hb.cells[i].WildPokemon[0]) {
-              const wildPokemon = hb.cells[i].WildPokemon;
-              for (let j = wildPokemon.length - 1; j >= 0; j--) {
-                const pokeId = wildPokemon[j].pokemon.PokemonId;
-                const pokemon = a.pokemonlist[parseInt(pokeId, 10) - 1];
-                const position = {
-                  latitude: wildPokemon[j].Latitude,
-                  longitude: wildPokemon[j].Longitude,
-                };
-                const encounterId = wildPokemon[j].SpawnPointId;
-                encounters[encounterId] = {
-                  pokemon,
-                  details: wildPokemon[j],
-                  position
-                };
-              }
-            }
-          }
-          const hbPokemon = [];
-          _.forEach(encounters, (encounter) => {
-            hbPokemon.push(encounter);
-          });
-          logger.log('info', `Found ${hbPokemon.length} pokemon`);
-
-          if (hbPokemon.length === 0) {
-            return;
-          }
-
-          const newPokemon = removeKnownPokemon(hbPokemon);
-          logger.log('info', `Found ${newPokemon.length} new pokemon`);
-          if (newPokemon.length === 0) {
-            return;
-          }
-
-          const interestingPokemon = removeUninterestingPokemon(newPokemon);
-          logger.log('info', `Found ${interestingPokemon.length} interesting pokemon`);
-          if (interestingPokemon.length === 0) {
-            return;
-          }
-          sendMessage(interestingPokemon);
-        }
-      });
-    }
-    getHeartbeat();
-    setInterval(getHeartbeat, 60000);
-  });
-});
-
-
 let knownPokemon = {};
 function removeKnownPokemon(pokemon) {
   const nextKnownPokemon = {};
@@ -156,7 +72,9 @@ function sendMessage(pokemon) {
   });
 }
 
-function postPokemonMessage(p){
+
+function postPokemonMessage(p) {
+
   let pre = '';
   if (p.rarity.match(/rare/i)) {
     pre = '@here ';
@@ -226,3 +144,89 @@ function postPokemonMessage(p){
     logger.log('info', `POST: ${pretext}\n${message}`);
   });
 };
+
+
+
+
+a.init(username, password, location, provider, (err) => {
+  if (err) {
+    logger.error(err);
+    process.exit(2);
+  }
+
+  logger.log('info', `Current location: ${a.playerInfo.locationName}`);
+  logger.log('info', `lat/long/alt: : ${a.playerInfo.latitude} ${a.playerInfo.longitude} ${a.playerInfo.altitude}`);
+  start_location = {
+    latitude: a.playerInfo.latitude,
+    longitude: a.playerInfo.longitude,
+  };
+
+  a.GetProfile((error, profile) => {
+    if (error) {
+      logger.error(error);
+      process.exit(3);
+    }
+
+    logger.log('info', `Username: ${profile.username}`);
+
+    function getHeartbeat() {
+      logger.log('info', 'Requesting heartbeat');
+      a.Heartbeat((hbError, hb) => {
+        if (hbError) {
+          logger.error(hbError);
+          process.exit(3);
+        }
+
+        if (!hb || !hb.cells) {
+          logger.error('hb or hb.cells undefined - aborting');
+        } else {
+          logger.log('info', 'Heartbeat received');
+          const encounters = {};
+          for (let i = hb.cells.length - 1; i >= 0; i--) {
+            if (hb.cells[i].WildPokemon[0]) {
+              const wildPokemon = hb.cells[i].WildPokemon;
+              for (let j = wildPokemon.length - 1; j >= 0; j--) {
+                const pokeId = wildPokemon[j].pokemon.PokemonId;
+                const pokemon = a.pokemonlist[parseInt(pokeId, 10) - 1];
+                const position = {
+                  latitude: wildPokemon[j].Latitude,
+                  longitude: wildPokemon[j].Longitude,
+                };
+                const encounterId = wildPokemon[j].SpawnPointId;
+                encounters[encounterId] = {
+                  pokemon,
+                  details: wildPokemon[j],
+                  position,
+                };
+              }
+            }
+          }
+          const hbPokemon = [];
+          _.forEach(encounters, (encounter) => {
+            hbPokemon.push(encounter);
+          });
+          logger.log('info', `Found ${hbPokemon.length} pokemon`);
+
+          if (hbPokemon.length === 0) {
+            return;
+          }
+
+          const newPokemon = removeKnownPokemon(hbPokemon);
+          logger.log('info', `Found ${newPokemon.length} new pokemon`);
+          if (newPokemon.length === 0) {
+            return;
+          }
+
+          const interestingPokemon = removeUninterestingPokemon(newPokemon);
+          logger.log('info', `Found ${interestingPokemon.length} interesting pokemon`);
+          if (interestingPokemon.length === 0) {
+            return;
+          }
+          sendMessage(interestingPokemon);
+        }
+      });
+    }
+    getHeartbeat();
+    setInterval(getHeartbeat, 60000);
+  });
+});
