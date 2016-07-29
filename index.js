@@ -142,8 +142,8 @@ function postPokemonMessage(p){
     geo.reverseGeoCode(p.position, function(geocode){
       var seconds = Math.floor(p.details.TimeTillHiddenMs / 1000);
       var remaining = Math.floor(seconds/60)+":"+Math.floor(seconds%60)+" remaining";
-      var message = pre+'A wild *' + p.pokemon.name + '* appeared!\n' +
-                    '<https://maps.google.co.uk/maps?f=d&dirflg=w&'+
+      var pretext = pre+'A wild *' + p.pokemon.name + '* appeared!';
+      var message = '<https://maps.google.co.uk/maps?f=d&dirflg=w&'+
                     'saddr='+start_location.latitude+","+start_location.longitude+'&'+
                     'daddr='+p.position.latitude+','+p.position.longitude+'|'+p.distance+'m '+p.bearing+geocode + ')>\n' +
         remaining;
@@ -170,7 +170,8 @@ function postPokemonMessage(p){
         let image = `https://maps.googleapis.com/maps/api/staticmap?center=${p.position.latitude},${p.position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=${process.env.MAPS_API}&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
         attachments = [
               {
-                "fallback": message,
+                "pretext": pretext,
+                "fallback": pretext + '\n' + message,
                 "color": COLOUR_BY_RARITY[p.rarity],
                 "image_url": p.pokemon.img,
                 "text": message,
@@ -194,6 +195,6 @@ function postPokemonMessage(p){
           if(response.body) logger.log(response.body);
         });
       }
-      logger.log('info', "POST: "+ message );
+      logger.log('info', "POST: "+ pretext + '\n' + message );
     });
 }
