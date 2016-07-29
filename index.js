@@ -15,7 +15,7 @@ var a = new PokemonGO.Pokeio();
 
 var location = {
   type: 'name',
-  name: process.env.PGO_LOCATION || "Times Square",
+  name: process.env.PGO_LOCATION,
 };
 var geoLocation = location.name.match(/^(-?\d+\.\d+),(-?\d+\.\d+)$/);
 if ( geoLocation ){
@@ -27,9 +27,9 @@ if ( geoLocation ){
   }
 }
 
-var username = process.env.PGO_USERNAME || "boylesjake";
-var password = process.env.PGO_PASSWORD || "baseball200";
-var provider = process.env.PGO_PROVIDER || 'ptc';
+var username = process.env.PGO_USERNAME;
+var password = process.env.PGO_PASSWORD;
+var provider = process.env.PGO_PROVIDER || 'google';
 var slackURL = process.env.SLACK_WEBHOOK_URL;
 var googleAPI = process.env.MAPS_API;
 var start_location;
