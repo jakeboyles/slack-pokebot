@@ -27,6 +27,14 @@
     "LOGGLY_SUBDOMAIN": {
       "description": "Your Loggly subdomain, if you want to use Loggly.",
       "required": false
+    },
+    "PGO_PROVIDER": {
+      "description": "Use Google (google) or Pokemon trainer club(ptc) to login?",
+      "required": false
+    },
+    "MAPS_API": {
+      "description": "If you want an image of where the pokemon is add a google maps key (https://developers.google.com/maps/documentation/static-maps/get-api-key)",
+      "required": false
     }
   }
 }
