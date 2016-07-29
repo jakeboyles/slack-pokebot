@@ -12,9 +12,9 @@ var a = new PokemonGO.Pokeio();
 
 var location = {
   type: 'name',
-  name: process.env.PGO_LOCATION || "new york",
+  name: process.env.PGO_LOCATION,
 };
-var geoLocation = process.env.PGO_LOCATION.match(/^(-?\d+\.\d+),(-?\d+\.\d+)$/);
+var geoLocation = location.name.match(/^(-?\d+\.\d+),(-?\d+\.\d+)$/);
 if ( geoLocation ){
   location.type = 'coords';
   location.coords = {
@@ -24,10 +24,11 @@ if ( geoLocation ){
   }
 }
 
-var username = process.env.PGO_USERNAME || "jacobboyles";
-var password = process.env.PGO_PASSWORD || "baseball200";
-var provider = process.env.PGO_PROVIDER || 'ptc';
-
+var username = process.env.PGO_USERNAME;
+var password = process.env.PGO_PASSWORD;
+var provider = process.env.PGO_PROVIDER || 'google';
+var slackURL = process.env.SLACK_WEBHOOK_URL;
+var googleAPI = process.env.MAPS_API;
 var start_location;
 
 a.init(username, password, location, provider, function(err) {
@@ -93,7 +94,7 @@ a.init(username, password, location, provider, function(err) {
       });
     }
     getHeartbeat();
-    setInterval( getHeartbeat , 60000);
+    setInterval( getHeartbeat , 6000);
   });
 });
 
@@ -151,16 +152,20 @@ function postPokemonMessage(p){
         "ultra-rare": "#E600FF"
       };
 
-      if(process.env.MAPS_API)
+      var attachments = [
+              {
+                "fallback": message,
+                "color": COLOUR_BY_RARITY[p.rarity],
+                "image_url": p.pokemon.img,
+                "text": message,
+                "unfurl_media": true
+              }
+            ];
+
+      if(googleAPI)
       {
-        image = `https://maps.googleapis.com/maps/api/staticmap?center=${position.latitude},${position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=AIzaSyBmhVz0j9QcBbHfYtusRMQfjSELV24gLkc&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
-      }
-       if ( process.env.SLACK_WEBHOOK_URL ){
-        request.post({
-          url: process.env.SLACK_WEBHOOK_URL,
-          json: true,
-          body: {
-            attachments: [
+        image = `https://maps.googleapis.com/maps/api/staticmap?center=${p.position.latitude},${p.position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=AIzaSyBmhVz0j9QcBbHfYtusRMQfjSELV24gLkc&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
+        attachments = [
               {
                 "fallback": message,
                 "color": COLOUR_BY_RARITY[p.rarity],
@@ -169,9 +174,17 @@ function postPokemonMessage(p){
                 "unfurl_media": true
               },
               {
+                "title":"Google Image",
                 "image_url": image,
               }
-            ]
+            ];
+      }
+       if ( slackURL ){
+        request.post({
+          url: slackURL,
+          json: true,
+          body: {
+            attachments:attachments,
           }
         }, function(error, response, body) {
           if(error) logger.error(error);
