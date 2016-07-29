@@ -94,7 +94,7 @@ a.init(username, password, location, provider, function(err) {
       });
     }
     getHeartbeat();
-    setInterval( getHeartbeat , 6000);
+    setInterval( getHeartbeat , 60000);
   });
 });
 
