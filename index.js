@@ -167,7 +167,7 @@ function postPokemonMessage(p){
 
       if(googleAPI)
       {
-        let image = `https://maps.googleapis.com/maps/api/staticmap?center=${p.position.latitude},${p.position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=AIzaSyBmhVz0j9QcBbHfYtusRMQfjSELV24gLkc&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
+        let image = `https://maps.googleapis.com/maps/api/staticmap?center=${p.position.latitude},${p.position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=${process.env.MAPS_API}&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
         attachments = [
               {
                 "fallback": message,
