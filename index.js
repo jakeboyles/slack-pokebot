@@ -7,8 +7,8 @@ const _ = require('lodash');
 const env = require('node-env-file');
 const logger = require('./logger');
 const metrics = require('./metrics');
-const geo = require('./geo');
-  env(__dirname + '/.env');
+// const geo = require('./geo');
+// env(__dirname + '/.env');
 
 logger.log('info', 'Initialised');
 
