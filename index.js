@@ -175,11 +175,16 @@ function postPokemonMessage(p){
                 "color": COLOUR_BY_RARITY[p.rarity],
                 "image_url": p.pokemon.img,
                 "text": message,
+<<<<<<< HEAD
                 "unfurl_media": true
               },
               {
                 "title":"Google Image",
                 "image_url": image,
+=======
+                "unfurl_media": true,
+                "mrkdwn_in": ["pretext"]
+>>>>>>> mrkdwn
               }
             ];
       }
