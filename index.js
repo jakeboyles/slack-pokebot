@@ -4,10 +4,11 @@
 const PokemonGO = require('pokemon-go-node-api');
 const request = require('request');
 const _ = require('lodash');
-
+const env = require('node-env-file');
 const logger = require('./logger');
 const metrics = require('./metrics');
 const geo = require('./geo');
+  env(__dirname + '/.env');
 
 logger.log('info', 'Initialised');
 
@@ -94,13 +95,13 @@ function postPokemonMessage(p) {
 
     var attachments = [
       {
-        pretext,
-        'fallback': pretext + '\n' + message,
+        pre,
+        'fallback': pre + '\n' + message,
         'color': COLOUR_BY_RARITY[p.rarity],
         'image_url': p.pokemon.img,
         'text': message,
         'unfurl_media': true,
-        'mrkdwn_in': ['pretext'],
+        'mrkdwn_in': ['pre'],
       }
     ];
 
@@ -109,25 +110,19 @@ function postPokemonMessage(p) {
       let image = `https://maps.googleapis.com/maps/api/staticmap?center=${p.position.latitude},${p.position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=${process.env.MAPS_API}&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
       attachments = [
             {
-              pretext,
-              'fallback': pretext + '\n' + message,
+              pre,
+              'fallback': pre + '\n' + message,
               'color': COLOUR_BY_RARITY[p.rarity],
               'image_url': p.pokemon.img,
               'text': message,
               'unfurl_media': true,
-              'mrkdwn_in': ['pretext'],
-              fallback: message,
-              color: COLOUR_BY_RARITY[p.rarity],
-              thumb_url: p.pokemon.img,
-              text: message,
-              unfurl_media: true,
-              mrkdwn_in: ['text'],
+              'mrkdwn_in': ['pre'],
             },
             {
               "title":"Google Image",
               "image_url": image,
               "unfurl_media": true,
-              "mrkdwn_in": ["pretext"]
+              "mrkdwn_in": ["pre"]
             }
           ];
     }

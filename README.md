@@ -32,6 +32,8 @@ Now click here, and follow the instructions:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+**If you are interested in having google embedded maps in your slack message you will need to get a google maps key (https://developers.google.com/maps/documentation/static-maps/get-api-key)
+
 **Please note that if you're using a free dyno you'll need to enable the `worker` dyno - see [this issue](https://github.com/kmoe/slack-pokebot/issues/19).**
 
 #### Logging
