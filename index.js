@@ -1,13 +1,11 @@
 'use strict';
-
-
 const PokemonGO = require('pokemon-go-node-api');
 const request = require('request');
 const _ = require('lodash');
-const env = require('node-env-file');
+// const env = require('node-env-file');
 const logger = require('./logger');
 const metrics = require('./metrics');
-// const geo = require('./geo');
+const geo = require('./geo');
 // env(__dirname + '/.env');
 
 logger.log('info', 'Initialised');
@@ -29,15 +27,15 @@ if (geoLocation) {
   };
 }
 
-var username = process.env.PGO_USERNAME;
-var password = process.env.PGO_PASSWORD;
-var provider = process.env.PGO_PROVIDER || 'google';
-var slackURL = process.env.SLACK_WEBHOOK_URL;
-var googleAPI = process.env.MAPS_API;
-var start_location;
-
+const username = process.env.PGO_USERNAME;
+const password = process.env.PGO_PASSWORD;
+const provider = process.env.PGO_PROVIDER || 'google';
+const slackURL = process.env.SLACK_WEBHOOK_URL;
+const googleAPI = process.env.MAPS_API;
+let start_location;
 
 let knownPokemon = {};
+
 function removeKnownPokemon(pokemon) {
   const nextKnownPokemon = {};
   const unknownPokemon = [];
@@ -67,15 +65,7 @@ function removeUninterestingPokemon(pokemon) {
   return interestingPokemon;
 }
 
-function sendMessage(pokemon) {
-  _.forEach(pokemon, (poke) => {
-    postPokemonMessage(poke);
-  });
-}
-
-
 function postPokemonMessage(p) {
-
   let pre = '';
   if (p.rarity.match(/rare/i)) {
     pre = '@here ';
@@ -93,46 +83,45 @@ function postPokemonMessage(p) {
       'ultra-rare': '#E600FF',
     };
 
-    var attachments = [
+    let attachments = [
       {
         pre,
-        'fallback': pre + '\n' + message,
-        'color': COLOUR_BY_RARITY[p.rarity],
-        'image_url': p.pokemon.img,
-        'text': message,
-        'unfurl_media': true,
-        'mrkdwn_in': ['pre'],
-      }
+        fallback: `${pre}\n${message}`,
+        color: COLOUR_BY_RARITY[p.rarity],
+        image_url: p.pokemon.img,
+        text: message,
+        unfurl_media: true,
+        mrkdwn_in: ['pre'],
+      },
     ];
 
-    if(googleAPI)
-    {
-      let image = `https://maps.googleapis.com/maps/api/staticmap?center=${p.position.latitude},${p.position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=${process.env.MAPS_API}&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
+    if (googleAPI) {
+      const image = `https://maps.googleapis.com/maps/api/staticmap?center=${p.position.latitude},${p.position.longitude}&size=640x400&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&key=${process.env.MAPS_API}&zoom=14&&markers=color:blue%7Clabel:S%7C${p.position.latitude},${p.position.longitude}`;
       attachments = [
-            {
-              pre,
-              'fallback': pre + '\n' + message,
-              'color': COLOUR_BY_RARITY[p.rarity],
-              'image_url': p.pokemon.img,
-              'text': message,
-              'unfurl_media': true,
-              'mrkdwn_in': ['pre'],
-            },
-            {
-              "title":"Google Image",
-              "image_url": image,
-              "unfurl_media": true,
-              "mrkdwn_in": ["pre"]
-            }
-          ];
+        {
+          pre,
+          fallback: `${pre}\n${message}`,
+          color: COLOUR_BY_RARITY[p.rarity],
+          image_url: p.pokemon.img,
+          text: message,
+          unfurl_media: true,
+          mrkdwn_in: ['pre'],
+        },
+        {
+          title: 'Google Image',
+          image_url: image,
+          unfurl_media: true,
+          mrkdwn_in: ['pre'],
+        },
+      ];
     }
-    if ( slackURL ){
+    if (slackURL) {
       request.post({
         url: slackURL,
         json: true,
         body: {
-          attachments:attachments,
-        }
+          attachments,
+        },
       }, (error, response, body) => {
         if (error) {
           logger.error(error);
@@ -144,10 +133,13 @@ function postPokemonMessage(p) {
     }
     logger.log('info', `POST: ${message}`);
   });
-};
+}
 
-
-
+function sendMessage(pokemon) {
+  _.forEach(pokemon, (poke) => {
+    postPokemonMessage(poke);
+  });
+}
 
 a.init(username, password, location, provider, (err) => {
   if (err) {
